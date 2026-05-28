@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CareTrack — Bemor Profili</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+
+  <style>
+    :root {
+      --primary: #0f6cbd;
+      --primary-dark: #0a4f9c;
+      --primary-light: #e8f3fc;
+      --accent: #00b4d8;
+      --text: #1e293b;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --sidebar-w: 260px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: #f4f7fb; color: var(--text);
+      display: flex; min-height: 100vh; overflow-x: hidden;
+    }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      width: var(--sidebar-w); min-height: 100vh;
+      background: linear-gradient(175deg, #0a4f9c 0%, #0f6cbd 60%, #00b4d8 100%);
+      display: flex; flex-direction: column;
+      position: fixed; top: 0; left: 0; z-index: 100;
+      box-shadow: 4px 0 24px rgba(15,108,189,0.15);
+    }
+    .sidebar-brand { padding: 28px 24px 20px; border-bottom: 1px solid rgba(255,255,255,0.12); }
+    .sidebar-brand-icon {
+      width: 44px; height: 44px; background: rgba(255,255,255,0.15);
+      border-radius: 12px; display: flex; align-items: center; justify-content: center;
+      margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.2);
+    }
+    .sidebar-brand-icon i { font-size: 22px; color: white; }
+    .sidebar-brand-name { font-size: 18px; font-weight: 800; color: white; }
+    .sidebar-brand-sub  { font-size: 11px; color: rgba(255,255,255,0.55); margin-top: 2px; }
+    .sidebar-nav { flex: 1; padding: 16px 12px; overflow-y: auto; }
+    .nav-section-label {
+      font-size: 10px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 1.2px; color: rgba(255,255,255,0.4); padding: 8px 12px 6px; margin-top: 8px;
+    }
+    .nav-item {
+      display: flex; align-items: center; gap: 12px; padding: 11px 14px;
+      border-radius: 12px; color: rgba(255,255,255,0.75); text-decoration: none;
+      font-size: 14px; font-weight: 600; transition: all 0.2s; margin-bottom: 2px;
+    }
+    .nav-item i { font-size: 18px; min-width: 20px; }
+    .nav-item:hover { background: rgba(255,255,255,0.12); color: white; }
+    .nav-item.active { background: rgba(255,255,255,0.18); color: white; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    .nav-item .badge-count {
+      margin-left: auto; background: rgba(255,255,255,0.2);
+      color: white; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 20px;
+    }
+    .sidebar-footer { padding: 16px 12px; border-top: 1px solid rgba(255,255,255,0.12); }
+    .user-card {
+      display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+      background: rgba(255,255,255,0.1); border-radius: 12px; cursor: pointer; transition: 0.2s;
+    }
+    .user-card:hover { background: rgba(255,255,255,0.18); }
+    .user-avatar {
+      width: 36px; height: 36px; background: rgba(255,255,255,0.2);
+      border-radius: 10px; display: flex; align-items: center; justify-content: center;
+    }
+    .user-avatar i { font-size: 18px; color: white; }
+    .user-name { font-size: 13px; font-weight: 700; color: white; }
+    .user-role { font-size: 11px; color: rgba(255,255,255,0.55); }
+    .user-card .bi-chevron-right { margin-left: auto; color: rgba(255,255,255,0.4); font-size: 12px; }
+
+    /* ── MAIN ── */
+    .main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; width: calc(100% - var(--sidebar-w)); min-width: 0; overflow-x: hidden; }
+    .topbar {
+      background: white; padding: 16px 32px;
+      display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      position: sticky; top: 0; z-index: 50;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    .topbar-left { display: flex; align-items: center; gap: 14px; }
+    .topbar-back {
+      display: flex; align-items: center; gap: 8px;
+      padding: 8px 14px; border-radius: 10px;
+      border: 1.5px solid var(--border); background: white;
+      font-size: 13px; font-weight: 600; color: var(--muted);
+      text-decoration: none; transition: 0.2s; cursor: pointer;
+    }
+    .topbar-back:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
+    .topbar-title { font-size: 20px; font-weight: 800; color: var(--text); }
+    .topbar-sub   { font-size: 13px; color: var(--muted); margin-top: 1px; }
+    .topbar-right { display: flex; align-items: center; gap: 10px; }
+    .topbar-btn {
+      width: 40px; height: 40px; border-radius: 10px;
+      border: 1.5px solid var(--border); background: white;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: 0.2s; color: var(--muted); text-decoration: none;
+    }
+    .topbar-btn:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
+    .topbar-date {
+      font-size: 13px; color: var(--muted); font-weight: 500;
+      background: #f8fafc; border: 1.5px solid var(--border);
+      padding: 8px 14px; border-radius: 10px;
+      display: flex; align-items: center; gap: 6px;
+    }
+
+    /* ── CONTENT ── */
+    .content { padding: 28px 32px; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── PROFILE HEADER ── */
+    .profile-header {
+      background: white; border-radius: 20px;
+      border: 1px solid var(--border);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+      padding: 28px 32px;
+      display: flex; align-items: center; gap: 24px;
+      margin-bottom: 24px;
+      animation: fadeUp 0.4s ease both;
+      position: relative; overflow: hidden;
+    }
+    .profile-header::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 4px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+    }
+    .profile-avatar-big {
+      width: 88px; height: 88px; min-width: 88px;
+      border-radius: 20px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 32px; font-weight: 800; color: white;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    }
+    .profile-info { flex: 1; }
+    .profile-name { font-size: 24px; font-weight: 800; color: var(--text); margin-bottom: 4px; }
+    .profile-id   { font-size: 13px; color: var(--muted); font-weight: 600; margin-bottom: 12px; }
+    .profile-badges { display: flex; gap: 8px; flex-wrap: wrap; }
+    .profile-badge {
+      display: flex; align-items: center; gap: 6px;
+      padding: 5px 12px; border-radius: 20px;
+      font-size: 12px; font-weight: 700;
+    }
+    .pb-blue   { background: var(--primary-light); color: var(--primary); }
+    .pb-green  { background: #d1fae5; color: #065f46; }
+    .pb-orange { background: #fef3c7; color: #92400e; }
+    .pb-gray   { background: #f1f5f9; color: var(--muted); }
+    .profile-actions { display: flex; gap: 10px; align-items: flex-start; }
+    .btn-edit {
+      display: flex; align-items: center; gap: 8px;
+      padding: 10px 20px; border-radius: 12px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white; font-size: 14px; font-weight: 700;
+      border: none; cursor: pointer; transition: 0.2s;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      box-shadow: 0 4px 12px rgba(15,108,189,0.3);
+    }
+    .btn-edit:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(15,108,189,0.4); }
+    .btn-del {
+      display: flex; align-items: center; gap: 8px;
+      padding: 10px 16px; border-radius: 12px;
+      background: white; color: var(--danger);
+      font-size: 14px; font-weight: 700;
+      border: 1.5px solid #fecaca; cursor: pointer; transition: 0.2s;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .btn-del:hover { background: #fff1f1; }
+
+    /* ── GRID ── */
+    .profile-grid {
+      display: grid;
+      grid-template-columns: 340px minmax(0, 1fr);
+      gap: 24px;
+      align-items: start;
+    }
+
+    /* ── INFO CARDS ── */
+    .info-card {
+      background: white; border-radius: 16px;
+      border: 1px solid var(--border);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+      overflow: hidden;
+      animation: fadeUp 0.4s ease 0.1s both;
+      margin-bottom: 20px;
+    }
+    .info-card-header {
+      padding: 16px 20px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .info-card-title { font-size: 14px; font-weight: 800; color: var(--text); }
+    .info-card-title i { color: var(--primary); }
+    .info-row {
+      display: flex; align-items: flex-start;
+      padding: 13px 20px; border-bottom: 1px solid #f1f5f9;
+    }
+    .info-row:last-child { border-bottom: none; }
+    .info-label {
+      width: 130px; min-width: 130px;
+      font-size: 12px; font-weight: 700;
+      color: var(--muted); text-transform: uppercase; letter-spacing: 0.4px;
+      padding-top: 1px;
+    }
+    .info-value { font-size: 14px; font-weight: 600; color: var(--text); }
+
+    /* Doctor card */
+    .doctor-card {
+      background: white; border-radius: 16px;
+      border: 1px solid var(--border);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+      overflow: hidden;
+      animation: fadeUp 0.4s ease 0.15s both;
+      margin-bottom: 20px;
+    }
+    .doctor-card-body {
+      padding: 20px;
+      display: flex; align-items: center; gap: 16px;
+    }
+    .doc-avatar {
+      width: 56px; height: 56px; min-width: 56px;
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; font-weight: 800; color: white;
+    }
+    .doc-name { font-size: 16px; font-weight: 800; color: var(--text); }
+    .doc-spec { font-size: 13px; color: var(--primary); font-weight: 600; margin-top: 3px; }
+    .doc-dept { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .doc-contacts { padding: 0 20px 16px; display: flex; flex-direction: column; gap: 8px; }
+    .doc-contact-row {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 13px; color: var(--muted); font-weight: 500;
+    }
+    .doc-contact-row i { color: var(--primary); font-size: 14px; width: 16px; }
+    .doc-link {
+      margin: 0 20px 16px;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      padding: 9px; border-radius: 10px;
+      border: 1.5px solid var(--border); background: #fafcff;
+      font-size: 13px; font-weight: 700; color: var(--primary);
+      text-decoration: none; transition: 0.2s;
+    }
+    .doc-link:hover { border-color: var(--primary); background: var(--primary-light); }
+
+    /* ── DIAGNOSES ── */
+    .diag-section {
+      background: white; border-radius: 16px;
+      border: 1px solid var(--border);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+      overflow: hidden;
+      animation: fadeUp 0.4s ease 0.2s both;
+    }
+    .diag-header {
+      padding: 18px 22px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .diag-title {
+      font-size: 15px; font-weight: 800; color: var(--text);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .diag-title i { color: var(--primary); }
+    .btn-add-diag {
+      display: flex; align-items: center; gap: 6px;
+      padding: 8px 16px; border-radius: 10px;
+      background: var(--primary); color: white;
+      font-size: 13px; font-weight: 700; border: none;
+      cursor: pointer; transition: 0.2s;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .btn-add-diag:hover { background: var(--primary-dark); }
+
+    .diag-item {
+      padding: 18px 22px; border-bottom: 1px solid #f1f5f9;
+      transition: 0.15s; display: flex; gap: 16px; align-items: flex-start;
+    }
+    .diag-item:last-child { border-bottom: none; }
+    .diag-item:hover { background: #fafcff; }
+
+    .diag-icd-badge {
+      padding: 6px 12px; border-radius: 8px;
+      background: #f1f5f9; font-size: 12px; font-weight: 800;
+      color: var(--text); white-space: nowrap; font-family: monospace;
+      letter-spacing: 0.5px;
+    }
+    .diag-body { flex: 1; }
+    .diag-name { font-size: 14px; font-weight: 800; color: var(--text); margin-bottom: 4px; }
+    .diag-desc { font-size: 13px; color: var(--muted); margin-bottom: 8px; line-height: 1.5; }
+    .diag-meta { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .diag-date { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 4px; }
+
+    .sev-badge {
+      padding: 3px 10px; border-radius: 20px;
+      font-size: 11.5px; font-weight: 700;
+    }
+    .sev-high   { background: #fee2e2; color: #b91c1c; }
+    .sev-medium { background: #fef3c7; color: #92400e; }
+    .sev-low    { background: #d1fae5; color: #065f46; }
+
+    .diag-actions { display: flex; gap: 6px; align-items: center; }
+    .diag-btn {
+      width: 32px; height: 32px; border-radius: 8px;
+      border: 1.5px solid var(--border); background: white;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; color: var(--muted); font-size: 14px; transition: 0.2s;
+    }
+    .diag-btn:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
+    .diag-btn.danger:hover { border-color: var(--danger); color: var(--danger); background: #fff1f1; }
+
+    .diag-empty {
+      padding: 40px; text-align: center; color: var(--muted);
+    }
+    .diag-empty i { font-size: 32px; display: block; margin-bottom: 10px; opacity: 0.4; }
+    .diag-empty p { font-size: 14px; font-weight: 600; }
+
+    /* ── STATS ROW ── */
+    .stats-mini {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 16px; margin-bottom: 20px;
+      animation: fadeUp 0.4s ease 0.05s both;
+    }
+    .stat-mini-card {
+      background: white; border-radius: 14px;
+      border: 1px solid var(--border);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+      padding: 16px 18px;
+      display: flex; align-items: center; gap: 14px;
+    }
+    .stat-mini-icon {
+      width: 40px; height: 40px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .stat-mini-icon i { font-size: 19px; }
+    .smi-blue   { background: #e8f3fc; } .smi-blue i   { color: var(--primary); }
+    .smi-orange { background: #fef3c7; } .smi-orange i { color: var(--warning); }
+    .smi-red    { background: #fee2e2; } .smi-red i    { color: var(--danger); }
+    .stat-mini-val { font-size: 22px; font-weight: 800; color: var(--text); line-height: 1; }
+    .stat-mini-lbl { font-size: 12px; color: var(--muted); font-weight: 500; margin-top: 2px; }
+
+    /* ── MODAL ── */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(13,27,42,0.45); backdrop-filter: blur(4px);
+      z-index: 300; align-items: center; justify-content: center;
+    }
+    .modal-overlay.show { display: flex; }
+    .modal-box {
+      background: white; border-radius: 20px; width: 520px;
+      max-height: 90vh; overflow-y: auto;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.2);
+      animation: modalIn 0.3s cubic-bezier(0.16,1,0.3,1);
+    }
+    @keyframes modalIn {
+      from { opacity:0; transform: scale(0.95) translateY(16px); }
+      to   { opacity:1; transform: scale(1) translateY(0); }
+    }
+    .modal-header {
+      padding: 20px 24px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .modal-title { font-size: 17px; font-weight: 800; color: var(--text); display: flex; align-items: center; gap: 8px; }
+    .modal-title i { color: var(--primary); }
+    .modal-close {
+      width: 34px; height: 34px; border-radius: 9px;
+      border: 1.5px solid var(--border); background: #f8fafc;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; color: var(--muted); font-size: 16px; transition: 0.2s;
+    }
+    .modal-close:hover { border-color: var(--danger); color: var(--danger); background: #fff1f1; }
+    .modal-body { padding: 22px 24px; }
+    .form-group { margin-bottom: 16px; }
+    .form-label { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 7px; display: block; }
+    .form-input {
+      width: 100%; padding: 11px 14px;
+      border: 1.5px solid var(--border); border-radius: 10px;
+      font-size: 14px; font-family: 'Plus Jakarta Sans', sans-serif;
+      color: var(--text); background: #fafcff; outline: none; transition: 0.2s;
+    }
+    .form-input:focus { border-color: var(--primary); background: white; box-shadow: 0 0 0 4px rgba(15,108,189,0.08); }
+    .modal-footer {
+      padding: 16px 24px; border-top: 1px solid var(--border);
+      display: flex; justify-content: flex-end; gap: 10px;
+    }
+    .btn-cancel {
+      padding: 10px 20px; border-radius: 10px;
+      border: 1.5px solid var(--border); background: white;
+      font-size: 14px; font-weight: 700; color: var(--muted);
+      cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; transition: 0.2s;
+    }
+    .btn-cancel:hover { border-color: var(--danger); color: var(--danger); }
+    .btn-save {
+      padding: 10px 22px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white; font-size: 14px; font-weight: 700;
+      border: none; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif;
+      display: flex; align-items: center; gap: 6px;
+      box-shadow: 0 4px 12px rgba(15,108,189,0.3); transition: 0.2s;
+    }
+    .btn-save:hover { transform: translateY(-1px); }
+
+    /* Toast */
+    .toast {
+      position: fixed; bottom: 24px; right: 24px;
+      padding: 13px 18px; border-radius: 12px;
+      background: #1e293b; color: white;
+      font-size: 13px; font-weight: 600;
+      display: flex; align-items: center; gap: 8px;
+      z-index: 999; transform: translateY(100px);
+      transition: transform 0.3s cubic-bezier(0.16,1,0.3,1);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    }
+    .toast.show { transform: translateY(0); }
+    .toast.success { background: #065f46; }
+    .toast.danger  { background: #991b1b; }
+
+    /* Overlay & hamburger */
+    .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 99; }
+    .overlay.show { display: block; }
+    .hamburger {
+      display: none; width: 38px; height: 38px; border-radius: 10px;
+      border: 1.5px solid var(--border); background: white;
+      align-items: center; justify-content: center;
+      cursor: pointer; font-size: 20px; color: var(--text);
+    }
+
+    @media (max-width: 900px) {
+      .sidebar { transform: translateX(-100%); transition: transform 0.3s ease; }
+      .sidebar.open { transform: translateX(0); }
+      .main { margin-left: 0; width: 100%; }
+      .hamburger { display: flex; }
+      .profile-grid { grid-template-columns: 1fr; }
+      .stats-mini { grid-template-columns: repeat(3,1fr); }
+      .content { padding: 20px 16px; }
+      .topbar { padding: 14px 16px; flex-wrap: wrap; gap: 12px; }
+      .topbar-left { flex-wrap: wrap; gap: 10px; }
+      .topbar-title { font-size: 16px; }
+      .topbar-sub { font-size: 12px; }
+      .profile-header { flex-direction: column; align-items: flex-start; gap: 16px; }
+      .profile-actions { width: 100%; }
+    }
+    @media (max-width: 480px) {
+      .stats-mini { grid-template-columns: 1fr 1fr; }
+      .topbar-date { display: none; }
+      .modal-box { width: 95%; }
+      .profile-avatar-big { width: 64px; height: 64px; font-size: 24px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="overlay" onclick="toggleSidebar()"></div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <div class="sidebar-brand-icon"><i class="bi bi-heart-pulse-fill"></i></div>
+    <div class="sidebar-brand-name">CareTrack</div>
+    <div class="sidebar-brand-sub">Clinic Management System</div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Asosiy</div>
+    <a class="nav-item" href="dashboard.html"><i class="bi bi-grid-fill"></i> Dashboard</a>
+    <div class="nav-section-label">Boshqaruv</div>
+    <a class="nav-item" href="doctors.html">
+      <i class="bi bi-person-badge-fill"></i> Shifokorlar
+      <span class="badge-count">6</span>
+    </a>
+    <a class="nav-item active" href="patients.html">
+      <i class="bi bi-people-fill"></i> Bemorlar
+      <span class="badge-count">8</span>
+    </a>
+    <a class="nav-item" href="diagnoses.html">
+      <i class="bi bi-clipboard2-pulse-fill"></i> Tashxislar
+      <span class="badge-count">6</span>
+    </a>
+    <div class="nav-section-label">Tizim</div>
+    <a class="nav-item" href="hisobotlar.html"><i class="bi bi-bar-chart-fill"></i> Hisobotlar</a>
+    <a class="nav-item" href="settings.html"><i class="bi bi-gear-fill"></i> Sozlamalar</a>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="user-card">
+      <div class="user-avatar"><i class="bi bi-person-fill"></i></div>
+      <div>
+        <div class="user-name">Admin</div>
+        <div class="user-role">Administrator</div>
+      </div>
+      <i class="bi bi-chevron-right"></i>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <header class="topbar">
+    <div class="topbar-left">
+      <button class="hamburger" onclick="toggleSidebar()"><i class="bi bi-list"></i></button>
+      <a class="topbar-back" href="patients.html">
+        <i class="bi bi-arrow-left"></i> Bemorlar
+      </a>
+      <div>
+        <div class="topbar-title" id="topbarName">Bemor profili</div>
+        <div class="topbar-sub">To'liq tibbiy ma'lumotlar</div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="topbar-date">
+        <i class="bi bi-calendar3"></i>
+        <span id="currentDate"></span>
+      </div>
+      <a href="#" onclick="logout(event)" class="topbar-btn" title="Chiqish">
+        <i class="bi bi-box-arrow-right"></i>
+      </a>
+    </div>
+  </header>
+
+  <div class="content">
+
+    <!-- PROFILE HEADER -->
+    <div class="profile-header">
+      <div class="profile-avatar-big" id="profileAvatar">SA</div>
+      <div class="profile-info">
+        <div class="profile-name" id="profileName">Sardor Aliyev</div>
+        <div class="profile-id" id="profileId">#P-001</div>
+        <div class="profile-badges">
+          <span class="profile-badge pb-blue" id="profileGender">
+            <i class="bi bi-gender-male"></i> Erkak
+          </span>
+          <span class="profile-badge pb-gray" id="profileAge">
+            <i class="bi bi-cake2-fill"></i> 36 yosh
+          </span>
+          <span class="profile-badge pb-green" id="profileDoctor">
+            <i class="bi bi-person-badge-fill"></i> Dr. Karimov
+          </span>
+        </div>
+      </div>
+      <div class="profile-actions">
+        <button class="btn-edit" onclick="openEditPatient()">
+          <i class="bi bi-pencil-fill"></i> Tahrirlash
+        </button>
+        <button class="btn-del" onclick="confirmDeletePatient()">
+          <i class="bi bi-trash3-fill"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- MINI STATS -->
+    <div class="stats-mini">
+      <div class="stat-mini-card">
+        <div class="stat-mini-icon smi-blue"><i class="bi bi-clipboard2-pulse-fill"></i></div>
+        <div>
+          <div class="stat-mini-val" id="diagCount">3</div>
+          <div class="stat-mini-lbl">Jami tashxislar</div>
+        </div>
+      </div>
+      <div class="stat-mini-card">
+        <div class="stat-mini-icon smi-orange"><i class="bi bi-exclamation-circle-fill"></i></div>
+        <div>
+          <div class="stat-mini-val" id="diagMedium">2</div>
+          <div class="stat-mini-lbl">O'rtacha daraja</div>
+        </div>
+      </div>
+      <div class="stat-mini-card">
+        <div class="stat-mini-icon smi-red"><i class="bi bi-heartbeat"></i></div>
+        <div>
+          <div class="stat-mini-val" id="diagHigh">1</div>
+          <div class="stat-mini-lbl">Og'ir daraja</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MAIN GRID -->
+    <div class="profile-grid">
+
+      <!-- LEFT COL -->
+      <div>
+        <!-- Shaxsiy ma'lumotlar -->
+        <div class="info-card">
+          <div class="info-card-header">
+            <div class="info-card-title"><i class="bi bi-person-fill"></i> Shaxsiy ma'lumotlar</div>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Ism</span>
+            <span class="info-value" id="infoFirstName">Sardor</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Familiya</span>
+            <span class="info-value" id="infoLastName">Aliyev</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Tug'ilgan sana</span>
+            <span class="info-value" id="infoDob">1990-05-12</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Jinsi</span>
+            <span class="info-value" id="infoGender">Erkak</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Telefon</span>
+            <span class="info-value" id="infoPhone">+998 90 111 22 33</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Manzil</span>
+            <span class="info-value" id="infoAddress">Toshkent, Yunusobod</span>
+          </div>
+        </div>
+
+        <!-- Shifokor -->
+        <div class="doctor-card">
+          <div class="info-card-header">
+            <div class="info-card-title"><i class="bi bi-person-badge-fill"></i> Biriktirilgan shifokor</div>
+          </div>
+          <div class="doctor-card-body">
+            <div class="doc-avatar" id="docAvatar" style="background:#0f6cbd;">KJ</div>
+            <div>
+              <div class="doc-name" id="docName">Dr. Karimov Jahongir</div>
+              <div class="doc-spec" id="docSpec">Kardiolog</div>
+              <div class="doc-dept" id="docDept"><i class="bi bi-building" style="font-size:11px;"></i> Kardiologiya</div>
+            </div>
+          </div>
+          <div class="doc-contacts">
+            <div class="doc-contact-row"><i class="bi bi-telephone-fill"></i> <span id="docPhone">+998 90 123 45 67</span></div>
+            <div class="doc-contact-row"><i class="bi bi-envelope-fill"></i> <span id="docEmail">karimov@klinika.uz</span></div>
+          </div>
+          <a class="doc-link" href="doctors.html">
+            <i class="bi bi-arrow-right-circle-fill"></i> Shifokor profilini ko'rish
+          </a>
+        </div>
+      </div>
+
+      <!-- RIGHT COL — Tashxislar -->
+      <div class="diag-section">
+        <div class="diag-header">
+          <div class="diag-title"><i class="bi bi-clipboard2-pulse-fill"></i> Kasallik / Tashxis tarixi</div>
+          <button class="btn-add-diag" onclick="openAddDiag()">
+            <i class="bi bi-plus-lg"></i> Yangi tashxis
+          </button>
+        </div>
+        <div id="diagList"></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- TASHXIS MODAL -->
+<div class="modal-overlay" id="diagModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title"><i class="bi bi-clipboard2-pulse-fill"></i> <span id="diagModalTitle">Yangi tashxis</span></div>
+      <div class="modal-close" onclick="closeDiagModal()"><i class="bi bi-x-lg"></i></div>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">ICD kodi</label>
+        <input class="form-input" id="dIcd" placeholder="Masalan: J06.9"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Tashxis nomi</label>
+        <input class="form-input" id="dName" placeholder="Kasallik nomi"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Tavsif</label>
+        <textarea class="form-input" id="dDesc" rows="3" placeholder="Qisqacha tavsif..." style="resize:vertical;"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Og'irlik darajasi</label>
+        <select class="form-input" id="dSev">
+          <option value="">Tanlang...</option>
+          <option value="Yengil">Yengil</option>
+          <option value="O'rtacha">O'rtacha</option>
+          <option value="Og'ir">Og'ir</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Sana</label>
+        <input class="form-input" id="dDate" type="date"/>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeDiagModal()">Bekor qilish</button>
+      <button class="btn-save" onclick="saveDiag()"><i class="bi bi-check-lg"></i> Saqlash</button>
+    </div>
+  </div>
+</div>
+
+<!-- BEMOR TAHRIRLASH MODALI -->
+<div class="modal-overlay" id="editPatientModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title"><i class="bi bi-person-fill-gear"></i> Bemorni tahrirlash</div>
+      <div class="modal-close" onclick="closeEditPatient()"><i class="bi bi-x-lg"></i></div>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Ism</label>
+        <input class="form-input" id="epFirstName" placeholder="Ism"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Familiya</label>
+        <input class="form-input" id="epLastName" placeholder="Familiya"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Tug'ilgan sana</label>
+        <input class="form-input" id="epDob" type="date"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Jinsi</label>
+        <select class="form-input" id="epGender">
+          <option value="">Tanlang...</option>
+          <option value="Erkak">Erkak</option>
+          <option value="Ayol">Ayol</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Telefon</label>
+        <input class="form-input" id="epPhone" placeholder="+998 ..."/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Manzil</label>
+        <input class="form-input" id="epAddress" placeholder="Manzil"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Biriktirilgan shifokor</label>
+        <select class="form-input" id="epDoctor">
+          <option value="">Tanlang...</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeEditPatient()">Bekor qilish</button>
+      <button class="btn-save" onclick="saveEditPatient()"><i class="bi bi-check-lg"></i> Saqlash</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"><i class="bi bi-check-circle-fill"></i> <span id="toastMsg"></span></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="auth.js"></script>
+<script>
+  // ===== CareTrack — Bemor profili (REAL backend API) =====
+  function getToken() { return localStorage.getItem('token') || ''; }
+  function authHeaders() {
+    return { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + getToken() };
+  }
+  if (!getToken()) { window.location.href = 'index.html'; }
+
+  const COLORS = ['#0f6cbd','#0891b2','#059669','#d97706','#7c3aed','#db2777','#dc2626'];
+  const SEV_CLASS = { "Og'ir":'sev-high', "O'rtacha":'sev-medium', 'Yengil':'sev-low' };
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const patientId = parseInt(urlParams.get('id'));
+
+  let patient   = null;
+  let diagnoses = [];
+  let doctorsList = [];
+
+  const d = new Date();
+  document.getElementById('currentDate').textContent =
+    d.getDate() + ' ' +
+    ['Yanvar','Fevral','Mart','Aprel','May','Iyun','Iyul','Avgust','Sentabr','Oktabr','Noyabr','Dekabr'][d.getMonth()] +
+    ', ' + d.getFullYear();
+
+  function calcAge(dob) {
+    if (!dob) return '—';
+    return Math.floor((Date.now() - new Date(dob).getTime()) / (1000*60*60*24*365.25));
+  }
+
+  // ===== Bemorni backend dan yuklash (shifokor + tashxislar bilan) =====
+  async function loadPatient() {
+    if (!patientId) {
+      document.getElementById('profileName').textContent = 'Bemor tanlanmagan';
+      return;
+    }
+    try {
+      const res  = await fetch('/api/patients/' + patientId, { headers: authHeaders() });
+      if (res.status === 401) { window.location.href = 'index.html'; return; }
+      const data = await res.json();
+      if (!data.success) {
+        document.getElementById('profileName').textContent = 'Bemor topilmadi';
+        return;
+      }
+
+      patient   = data.data;
+      diagnoses = data.data.diagnoses || [];
+
+      // Shifokorlar ro'yxati (tashxis modal select uchun emas, edit uchun)
+      const dRes = await fetch('/api/doctors', { headers: authHeaders() });
+      const dData = await dRes.json();
+      if (dData.success) doctorsList = dData.data;
+
+      renderProfile();
+      renderDiagnoses();
+    } catch (err) {
+      document.getElementById('profileName').textContent = "Serverga ulanib bo'lmadi";
+    }
+  }
+
+  function renderProfile() {
+    const p = patient;
+    const initials = ((p.firstName[0]||'') + (p.lastName[0]||'')).toUpperCase();
+    const color = COLORS[p.id % COLORS.length];
+
+    document.getElementById('profileAvatar').textContent = initials;
+    document.getElementById('profileAvatar').style.background = color;
+    document.getElementById('profileName').textContent = p.firstName + ' ' + p.lastName;
+    document.getElementById('profileId').textContent = '#P-' + String(p.id).padStart(3,'0');
+    document.getElementById('topbarName').textContent = p.firstName + ' ' + p.lastName;
+
+    const gIcon = p.gender === 'Erkak' ? 'bi-gender-male' : 'bi-gender-female';
+    document.getElementById('profileGender').innerHTML = `<i class="bi ${gIcon}"></i> ${p.gender}`;
+    document.getElementById('profileAge').innerHTML = `<i class="bi bi-cake2-fill"></i> ${calcAge(p.dob)} yosh`;
+
+    const docName = p.docFirst ? ('Dr. ' + p.docFirst + ' ' + p.docLast) : 'Biriktirilmagan';
+    document.getElementById('profileDoctor').innerHTML = `<i class="bi bi-person-badge-fill"></i> ${docName}`;
+
+    // Shaxsiy ma'lumotlar
+    document.getElementById('infoFirstName').textContent = p.firstName;
+    document.getElementById('infoLastName').textContent  = p.lastName;
+    document.getElementById('infoDob').textContent       = p.dob || '—';
+    document.getElementById('infoGender').textContent    = p.gender;
+    document.getElementById('infoPhone').textContent     = p.phone   || '—';
+    document.getElementById('infoAddress').textContent   = p.address || '—';
+
+    // Biriktirilgan shifokor kartasi
+    if (p.docFirst) {
+      const docInitials = ((p.docFirst[0]||'') + (p.docLast[0]||'')).toUpperCase();
+      document.getElementById('docAvatar').textContent  = docInitials;
+      document.getElementById('docAvatar').style.background = COLORS[(p.doctorId||1) % COLORS.length];
+      document.getElementById('docName').textContent    = 'Dr. ' + p.docFirst + ' ' + p.docLast;
+      document.getElementById('docSpec').textContent    = p.docSpec || '';
+      document.getElementById('docDept').innerHTML      = `<i class="bi bi-building" style="font-size:11px;"></i> ${p.docDept || ''}`;
+      document.getElementById('docPhone').textContent   = p.docPhone || '—';
+      document.getElementById('docEmail').textContent   = p.docEmail || '—';
+    } else {
+      document.getElementById('docName').textContent  = 'Biriktirilmagan';
+      document.getElementById('docSpec').textContent  = '';
+      document.getElementById('docDept').textContent  = '';
+      document.getElementById('docPhone').textContent = '—';
+      document.getElementById('docEmail').textContent = '—';
+    }
+  }
+
+  function renderDiagnoses() {
+    document.getElementById('diagCount').textContent  = diagnoses.length;
+    document.getElementById('diagMedium').textContent = diagnoses.filter(x => x.severity === "O'rtacha").length;
+    document.getElementById('diagHigh').textContent   = diagnoses.filter(x => x.severity === "Og'ir").length;
+
+    const list = document.getElementById('diagList');
+    if (!diagnoses.length) {
+      list.innerHTML = '<div style="text-align:center;color:#888;padding:30px;">Hozircha tashxis yo\'q</div>';
+      return;
+    }
+    list.innerHTML = diagnoses.map(x => `
+      <div class="diag-item">
+        <span class="diag-icd-badge">${x.icd}</span>
+        <div class="diag-body">
+          <div class="diag-name">${x.name}</div>
+          <div class="diag-desc">${x.description || ''}</div>
+          <div class="diag-meta">
+            <span class="sev-badge ${SEV_CLASS[x.severity]||'sev-low'}">${x.severity}</span>
+            <span class="diag-date"><i class="bi bi-calendar3"></i> ${x.date || '—'}</span>
+          </div>
+        </div>
+        <div class="diag-actions">
+          <button class="diag-btn" onclick="openEditDiag(${x.id})" title="Tahrirlash"><i class="bi bi-pencil-fill"></i></button>
+          <button class="diag-btn danger" onclick="deleteDiag(${x.id})" title="O'chirish"><i class="bi bi-trash3-fill"></i></button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  // ===== Yangi tashxis qo'shish modal =====
+  let editDiagId = null;
+
+  function openAddDiag() {
+    editDiagId = null;
+    document.getElementById('diagModalTitle').textContent = 'Yangi tashxis';
+    ['dIcd','dName','dDesc'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+    const sv = document.getElementById('dSev'); if (sv) sv.value = '';
+    const dt = document.getElementById('dDate'); if (dt) dt.value = new Date().toISOString().split('T')[0];
+    document.getElementById('diagModal').classList.add('show');
+  }
+  function closeDiagModal() { document.getElementById('diagModal').classList.remove('show'); }
+
+  function openEditDiag(id) {
+    const x = diagnoses.find(d => d.id === id);
+    if (!x) return;
+    editDiagId = id;
+    document.getElementById('diagModalTitle').textContent = 'Tashxisni tahrirlash';
+    document.getElementById('dIcd').value      = x.icd;
+    document.getElementById('dName').value     = x.name;
+    document.getElementById('dDesc').value     = x.description || '';
+    document.getElementById('dSev').value = x.severity;
+    document.getElementById('dDate').value     = x.date;
+    document.getElementById('diagModal').classList.add('show');
+  }
+
+  async function saveDiag() {
+    const icd  = document.getElementById('dIcd').value.trim();
+    const name = document.getElementById('dName').value.trim();
+    const sev  = document.getElementById('dSev').value;
+    const date = document.getElementById('dDate').value;
+    if (!icd || !name || !sev || !date) { alert("Majburiy maydonlarni to'ldiring!"); return; }
+
+    const body = {
+      icd, name,
+      description: document.getElementById('dDesc').value.trim(),
+      severity: sev, date,
+      patientId: patient.id
+    };
+    try {
+      let res;
+      if (editDiagId) {
+        res = await fetch('/api/diagnoses/' + editDiagId, { method:'PUT', headers: authHeaders(), body: JSON.stringify(body) });
+      } else {
+        res = await fetch('/api/diagnoses', { method:'POST', headers: authHeaders(), body: JSON.stringify(body) });
+      }
+      const data = await res.json();
+      if (res.status === 403) { alert("Sizning rolingizda bunga ruxsat yo'q!"); return; }
+      if (!data.success) { alert(data.message || 'Xato!'); return; }
+      closeDiagModal();
+      await loadPatient();
+    } catch (err) { alert("Serverga ulanib bo'lmadi!"); }
+  }
+
+  async function deleteDiag(id) {
+    if (!confirm("Bu tashxisni o'chirishni tasdiqlaysizmi?")) return;
+    try {
+      const res  = await fetch('/api/diagnoses/' + id, { method:'DELETE', headers: authHeaders() });
+      const data = await res.json();
+      if (res.status === 403) { alert("Faqat Administrator o'chira oladi!"); return; }
+      if (!data.success) { alert(data.message || 'Xato!'); return; }
+      await loadPatient();
+    } catch (err) { alert("Serverga ulanib bo'lmadi!"); }
+  }
+
+  // ===== Bemorni o'chirish =====
+  async function confirmDeletePatient() {
+    if (!confirm(`"${patient.firstName} ${patient.lastName}" ni o'chirishni tasdiqlaysizmi? Uning barcha tashxislari ham o'chadi.`)) return;
+    try {
+      const res  = await fetch('/api/patients/' + patient.id, { method:'DELETE', headers: authHeaders() });
+      const data = await res.json();
+      if (res.status === 403) { alert("Faqat Administrator bemorni o'chira oladi!"); return; }
+      if (!data.success) { alert(data.message || 'Xato!'); return; }
+      window.location.href = 'patients.html';
+    } catch (err) { alert("Serverga ulanib bo'lmadi!"); }
+  }
+
+  // ===== Bemorni tahrirlash (profil sahifasida, modal orqali) =====
+  function openEditPatient() {
+    if (!patient) return;
+    document.getElementById('epFirstName').value = patient.firstName;
+    document.getElementById('epLastName').value  = patient.lastName;
+    document.getElementById('epDob').value       = patient.dob || '';
+    document.getElementById('epGender').value    = patient.gender || '';
+    document.getElementById('epPhone').value     = patient.phone || '';
+    document.getElementById('epAddress').value   = patient.address || '';
+
+    // Shifokor select'ini to'ldirish
+    const sel = document.getElementById('epDoctor');
+    sel.innerHTML = '<option value="">Tanlang...</option>' +
+      doctorsList.map(d => `<option value="${d.id}">Dr. ${d.firstName} ${d.lastName}</option>`).join('');
+    sel.value = patient.doctorId || '';
+
+    document.getElementById('editPatientModal').classList.add('show');
+  }
+
+  function closeEditPatient() {
+    document.getElementById('editPatientModal').classList.remove('show');
+  }
+
+  async function saveEditPatient() {
+    const firstName = document.getElementById('epFirstName').value.trim();
+    const lastName  = document.getElementById('epLastName').value.trim();
+    const dob       = document.getElementById('epDob').value;
+    const gender    = document.getElementById('epGender').value;
+    if (!firstName || !lastName || !dob || !gender) {
+      alert("Majburiy maydonlarni to'ldiring (ism, familiya, sana, jins)!");
+      return;
+    }
+    const docVal = document.getElementById('epDoctor').value;
+    const body = {
+      firstName, lastName, dob, gender,
+      phone:   document.getElementById('epPhone').value.trim(),
+      address: document.getElementById('epAddress').value.trim(),
+      doctorId: docVal ? Number(docVal) : null
+    };
+    try {
+      const res = await fetch('/api/patients/' + patient.id, {
+        method: 'PUT', headers: authHeaders(), body: JSON.stringify(body)
+      });
+      const data = await res.json();
+      if (res.status === 401) { window.location.href = 'index.html'; return; }
+      if (res.status === 403) { alert("Sizning rolingizda bunga ruxsat yo'q!"); return; }
+      if (!data.success) { alert(data.message || 'Xato!'); return; }
+      closeEditPatient();
+      await loadPatient();   // yangilangan ma'lumotni qayta yuklaydi
+    } catch (err) {
+      alert("Serverga ulanib bo'lmadi!");
+    }
+  }
+
+  function toggleSidebar() {
+    document.querySelector('.sidebar').classList.toggle('open');
+    document.querySelector('.overlay').classList.toggle('show');
+  }
+
+  loadPatient();
+
+  function logout(e) {
+    if (e) e.preventDefault();
+    document.getElementById('logoutModal').style.display = 'flex';
+  }
+  function doLogout() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('userRole');
+    localStorage.removeItem('userName');
+    window.location.href = 'index.html';
+  }
+</script>
+
+<div id="logoutModal" style="display:none;position:fixed;inset:0;background:rgba(15,30,60,0.45);z-index:9999;align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:18px;padding:28px;max-width:380px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.2);text-align:center;">
+    <div style="width:56px;height:56px;border-radius:50%;background:#fff1f1;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+      <i class="bi bi-box-arrow-right" style="font-size:24px;color:#dc2626;"></i>
+    </div>
+    <h3 style="font-size:18px;font-weight:800;color:#0f1e3c;margin-bottom:6px;">Tizimdan chiqish</h3>
+    <p style="font-size:14px;color:#64748b;margin-bottom:22px;">Rostdan ham tizimdan chiqmoqchimisiz?</p>
+    <div style="display:flex;gap:10px;justify-content:center;">
+      <button onclick="document.getElementById('logoutModal').style.display='none'" style="padding:10px 22px;border:1.5px solid #e2e8f0;background:#fff;border-radius:10px;font-weight:700;font-size:14px;cursor:pointer;font-family:inherit;color:#475569;">Bekor qilish</button>
+      <button onclick="doLogout()" style="padding:10px 22px;border:none;background:linear-gradient(135deg,#dc2626,#b91c1c);color:#fff;border-radius:10px;font-weight:700;font-size:14px;cursor:pointer;font-family:inherit;">Ha, chiqish</button>
+    </div>
+  </div>
+</div>
+</body>
+</html>
